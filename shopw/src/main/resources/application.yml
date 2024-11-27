@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /shopapp
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/shopapp
+    username: root
+    password: 1234567
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+api:
+  prefix: api/v1
+
+jwt:
+  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
