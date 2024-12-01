@@ -46,7 +46,7 @@ public class OrderEntity {
     String note;
 
     @Column(name = "order_date")
-    Date OrderDate;
+    LocalDate OrderDate;
 
     String status;
 

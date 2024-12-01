@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -41,7 +42,7 @@ public class OrderDTO {
 	String status;
 
 	@JsonProperty( "order_date")
-	Date OrderDate;
+	LocalDate OrderDate;
 	
 	@JsonProperty("total_money")
 	@Min(value = 0, message = "total money >0")

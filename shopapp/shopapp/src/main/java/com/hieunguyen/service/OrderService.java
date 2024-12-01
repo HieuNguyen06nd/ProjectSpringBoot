@@ -14,7 +14,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -38,16 +39,17 @@ public class OrderService implements IOrderService {
         OrderEntity orderEntity = new OrderEntity();
         modelMapper.map(orderDTO,orderEntity);
         orderEntity.setUserEntity(userEntity);
-        orderEntity.setOrderDate((java.sql.Date) new Date());
-
-        Date shippingDate = orderDTO.getShippingDate();
-
-        if (shippingDate ==null || shippingDate.before(new Date())){
+        orderEntity.setOrderDate(LocalDate.now());
+//        kiem tra ngay ship > now
+        LocalDate shippingDate = orderDTO.getShippingDate() == null ? LocalDate.now() : orderDTO.getShippingDate().toLocalDate();
+        if (shippingDate.isBefore(LocalDate.now())){
             throw new DataNotFoundException("Date must be at least today !");
         }
+        orderEntity.setShippingDate(Date.valueOf(shippingDate));
         orderEntity.setActive(true);
 
         orderRepository.save(orderEntity);
+        modelMapper.typeMap(OrderEntity.class, OrderReponse.class);
         return modelMapper.map(orderEntity, OrderReponse.class);
     }
 
