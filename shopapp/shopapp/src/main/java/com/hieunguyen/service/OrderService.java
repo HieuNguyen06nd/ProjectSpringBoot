@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
 import java.sql.Date;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -29,7 +31,7 @@ public class OrderService implements IOrderService {
     ModelMapper modelMapper;
 
     @Override
-    public OrderReponse createOrder(OrderDTO orderDTO) throws Exception {
+    public OrderEntity createOrder(OrderDTO orderDTO) throws Exception {
        UserEntity userEntity =  userRepository.findById(orderDTO.getUserId())
                .orElseThrow( ()->new DataNotFoundException("Cannot found user!" +orderDTO.getUserId()));
 //       convert dto -> order
@@ -49,27 +51,40 @@ public class OrderService implements IOrderService {
         orderEntity.setActive(true);
 
         orderRepository.save(orderEntity);
-        modelMapper.typeMap(OrderEntity.class, OrderReponse.class);
-        return modelMapper.map(orderEntity, OrderReponse.class);
+        return orderEntity;
     }
 
     @Override
     public OrderEntity getOrderById(long id) {
-        return null;
+        return orderRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<OrderEntity> getAllOrder() {
-        return List.of();
+    public List<OrderEntity> findByUserId(Long userId) {
+
+        return orderRepository.findByUserEntityId(userId);
     }
 
     @Override
-    public OrderEntity updateOrder(long id, OrderDTO orderDTO) {
-        return null;
+    public OrderEntity updateOrder(long id, OrderDTO orderDTO) throws DataNotFoundException {
+        OrderEntity orderEntity = orderRepository.findById(id)
+                .orElseThrow(() ->new DataNotFoundException("Cannot find order id"+id));
+        UserEntity userEntity = userRepository.findById(orderDTO.getUserId())
+                .orElseThrow(()->new DateTimeException("Cannot find user id "+ orderDTO.getUserId()));
+        modelMapper.typeMap(OrderDTO.class, OrderEntity.class)
+                .addMappings(mapper -> mapper.skip(OrderEntity::setId));
+        modelMapper.map(orderDTO,orderEntity);
+        orderEntity.setUserEntity(userEntity);
+        return orderRepository.save(orderEntity);
     }
 
     @Override
     public void deleteOrder(long id) {
-
+//xoa mem
+        OrderEntity orderEntity = orderRepository.findById(id).orElse(null);
+        if (orderEntity != null){
+            orderEntity.setActive(false);
+            orderRepository.save(orderEntity);
+        }
     }
 }

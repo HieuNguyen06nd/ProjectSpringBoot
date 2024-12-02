@@ -2,6 +2,7 @@ package com.hieunguyen.controller;
 
 import java.util.List;
 
+import com.hieunguyen.model.OrderEntity;
 import com.hieunguyen.reponse.OrderReponse;
 import com.hieunguyen.service.impl.IOrderService;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +46,8 @@ public class OrderController {
 						.toList();
 				return ResponseEntity.badRequest().body(errorMessages);
 			}
-			OrderReponse orderReponse = iOrderService.createOrder(orderDTO);
-			return ResponseEntity.ok(orderReponse);
+			OrderEntity orderEntity = iOrderService.createOrder(orderDTO);
+			return ResponseEntity.ok(orderEntity);
 			
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -55,29 +56,44 @@ public class OrderController {
 	}
 	
 	
-	@GetMapping("/{user_id}")
-	public ResponseEntity<?> getOrder(@Valid @PathVariable("user_id") Long user_id) {
+	@GetMapping("user/{user_id}")
+	public ResponseEntity<?> getOrders(@Valid @PathVariable("user_id") Long user_id) {
 		try {
-			return ResponseEntity.ok("get");
+			List<OrderEntity> orderEntityList = iOrderService.findByUserId(user_id);
+			return ResponseEntity.ok(orderEntityList);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 		
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getOrder(@Valid @PathVariable("id") Long id) {
+		try {
+			OrderEntity orderEntity =  iOrderService.getOrderById(id);
+			return ResponseEntity.ok(orderEntity);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
+	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateOrder(@Valid @PathVariable Long id,
 			@RequestBody OrderDTO orderDTO) {
-		//TODO: process PUT request
-		
-		return ResponseEntity.ok("put order");
+		try {
+			OrderEntity orderEntity =  iOrderService.updateOrder(id ,orderDTO );
+			return ResponseEntity.ok(orderEntity);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteOrder(@Valid @PathVariable Long id) {
-		//TODO: process PUT request
+		iOrderService.deleteOrder(id);
 		
-		return ResponseEntity.ok("delete order");
+		return ResponseEntity.ok("delete order successfully with id:  " + id);
 	}
 	
 	
