@@ -1,5 +1,6 @@
 package com.hieunguyen.controller;
 
+import com.hieunguyen.model.UserEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +35,7 @@ public class UserController {
 	IUserService iUserService;
 	
 	@PostMapping("/register")
-	public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO , BindingResult result) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO , BindingResult result) throws Exception{
 		try {
 			if(result.hasErrors()) {
 				List<String>errorMessages = result.getFieldErrors()
@@ -44,11 +45,11 @@ public class UserController {
 				return ResponseEntity.badRequest().body(errorMessages);
 			}
 			if(!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-				return ResponseEntity.badRequest().body("password does not match");
+				return ResponseEntity.badRequest().body("Password does not match");
 			}
-			iUserService.createUser(userDTO);
+			UserEntity userEntity = iUserService.createUser(userDTO);
 			
-			return ResponseEntity.ok("hello post");
+			return ResponseEntity.ok(userEntity);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -58,9 +59,12 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
-		String token = iUserService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-		
-		return ResponseEntity.ok("some token" +token);
+        try {
+			String token = iUserService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+			return ResponseEntity.ok("some token" + token);
+        } catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+        }
 		
 	}
 	

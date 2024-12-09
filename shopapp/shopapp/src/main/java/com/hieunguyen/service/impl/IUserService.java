@@ -9,7 +9,7 @@ import com.hieunguyen.model.UserEntity;
 @Service
 public interface IUserService {
 
-	UserEntity createUser(UserDTO userDTO) throws DataNotFoundException;
-	
-	String login(String phoneNumber, String password);
+	UserEntity createUser(UserDTO userDTO) throws Exception;
+
+	String login(String phoneNumber, String password) throws Exception;
 }
