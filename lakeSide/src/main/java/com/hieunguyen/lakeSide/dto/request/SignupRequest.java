@@ -1,4 +1,4 @@
-package com.hieunguyen.lakeSide.dto;
+package com.hieunguyen.lakeSide.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,11 @@
 package com.hieunguyen.lakeSide.service;
 
-import com.hieunguyen.lakeSide.dto.SignupRequest;
+import com.hieunguyen.lakeSide.dto.request.SignupRequest;
 import com.hieunguyen.lakeSide.dto.UserDto;
 import com.hieunguyen.lakeSide.enums.UserRole;
 import com.hieunguyen.lakeSide.model.User;
 import com.hieunguyen.lakeSide.repository.UserRepository;
+import com.hieunguyen.lakeSide.service.iml.IAuthService;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
 
@@ -43,14 +44,13 @@ public class AuthService {
             throw new EntityExistsException("User already present with email: "+ signupRequest.getEmail());
         }else {
             User user = new User();
-
             user.setName(signupRequest.getName());
             user.setUserRole(UserRole.CUSTOMER);
             user.setEmail(signupRequest.getEmail());
             user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
 
             User createUser = userRepository.save(user);
-            return createUser.getUserDto() ;
+            return createUser.getUserDto();
         }
     }
 

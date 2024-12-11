@@ -1,6 +1,6 @@
 
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /hotel
 
@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hotel_db
     username: root
-    password: 123456
+    password: 1234567
   jpa:
     hibernate:
       ddl-auto: update
