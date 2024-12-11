@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Data  // Lombok will generate the getter for 'role' and other fields
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +26,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private USER_ROLE role = USER_ROLE.ROLE_CUSTOMER;
+    private USER_ROLE role = USER_ROLE.ROLE_CUSTOMER;  // Enum for role
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
