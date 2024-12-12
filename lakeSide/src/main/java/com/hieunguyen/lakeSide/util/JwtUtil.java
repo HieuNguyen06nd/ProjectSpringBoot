@@ -34,9 +34,19 @@ public class JwtUtil {
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private Claims extracAllClaims(String token){
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody();
-    }
+//    private Claims extracAllClaims(String token){
+//        return Jwts.parserBuilder()
+//                .setSigningKey(getSigningKey()).build()
+//                .parseClaimsJwt(token).getBody();
+//    }
+        private Claims extracAllClaims(String token){
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)  // Sử dụng parseClaimsJws thay vì parseClaimsJwt
+                    .getBody();
+        }
+
 
     private <T> T extractClaims (String token, Function<Claims, T> claimsResolvers){
         final Claims claims = extracAllClaims(token);

@@ -1,11 +1,10 @@
-package com.hieunguyen.lakeSide.service;
+package com.hieunguyen.lakeSide.service.auth;
 
 import com.hieunguyen.lakeSide.dto.request.SignupRequest;
 import com.hieunguyen.lakeSide.dto.UserDto;
 import com.hieunguyen.lakeSide.enums.UserRole;
 import com.hieunguyen.lakeSide.model.User;
 import com.hieunguyen.lakeSide.repository.UserRepository;
-import com.hieunguyen.lakeSide.service.iml.IAuthService;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;

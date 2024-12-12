@@ -1,4 +1,4 @@
-package com.hieunguyen.lakeSide.controller;
+package com.hieunguyen.lakeSide.controller.auth;
 
 import com.hieunguyen.lakeSide.dto.request.AuthenticationRequest;
 import com.hieunguyen.lakeSide.dto.response.AuthenticationResponse;
@@ -6,8 +6,8 @@ import com.hieunguyen.lakeSide.dto.request.SignupRequest;
 import com.hieunguyen.lakeSide.dto.UserDto;
 import com.hieunguyen.lakeSide.model.User;
 import com.hieunguyen.lakeSide.repository.UserRepository;
-import com.hieunguyen.lakeSide.service.iml.IAuthService;
-import com.hieunguyen.lakeSide.service.iml.IUserService;
+import com.hieunguyen.lakeSide.service.auth.IAuthService;
+import com.hieunguyen.lakeSide.service.admin.room.iml.IUserService;
 import com.hieunguyen.lakeSide.util.JwtUtil;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;

@@ -1,12 +1,13 @@
 package com.hieunguyen.lakeSide.repository;
 
-import com.hieunguyen.lakeSide.model.Room;
+import com.hieunguyen.lakeSide.model.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long> {
-    Page<Room> findByAvailable(boolean available, Pageable pageable);
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    Page<Reservation> findAllByUserId(Pageable pageable, Long UserId);
 }

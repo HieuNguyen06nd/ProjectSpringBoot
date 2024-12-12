@@ -1,8 +1,7 @@
-package com.hieunguyen.lakeSide.service;
+package com.hieunguyen.lakeSide.service.admin.room;
 
 import com.hieunguyen.lakeSide.repository.UserRepository;
-import com.hieunguyen.lakeSide.service.iml.IAuthService;
-import com.hieunguyen.lakeSide.service.iml.IUserService;
+import com.hieunguyen.lakeSide.service.admin.room.iml.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

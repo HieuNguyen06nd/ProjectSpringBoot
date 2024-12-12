@@ -1,7 +1,7 @@
 package com.hieunguyen.lakeSide.config;
 
 import com.hieunguyen.lakeSide.enums.UserRole;
-import com.hieunguyen.lakeSide.service.iml.IUserService;
+import com.hieunguyen.lakeSide.service.admin.room.iml.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
