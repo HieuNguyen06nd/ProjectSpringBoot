@@ -11,8 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Embeddable
-public class RestaurentDto {
+public class RestaurantDto {
     private String title;
 
     @Column(length = 1000)
@@ -21,4 +20,6 @@ public class RestaurentDto {
     private String description;
 
     private Long id;
+
+
 }

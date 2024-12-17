@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Restaurent {
+public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

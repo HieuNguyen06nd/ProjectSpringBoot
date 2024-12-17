@@ -36,7 +36,7 @@ public class AppConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors->cors.configurationSource(configurationSource()));
 
-        return null;
+        return http.build();
 
     }
 

@@ -1,6 +1,8 @@
 package com.hieunguyen.shopwq.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hieunguyen.shopwq.dto.RestaurantDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +25,8 @@ public class User {
 
     private String fullName;
     private String email;
+
+    @JsonProperty(access = JsonProperty.Access.AUTO)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -34,7 +38,7 @@ public class User {
 
     @ElementCollection
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Restaurent> favorites = new ArrayList<>();
+    private List<RestaurantDto> favorites = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();

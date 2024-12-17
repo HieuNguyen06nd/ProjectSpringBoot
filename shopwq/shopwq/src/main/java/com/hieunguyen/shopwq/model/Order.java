@@ -24,7 +24,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")  // This should map to the restaurant in the Food entity
-    private Restaurent restaurant;
+    private Restaurant restaurant;
 
     private Long totalAmount;
 

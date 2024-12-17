@@ -20,5 +20,5 @@ public class Category {
 
     @ManyToOne
     @JsonIgnore
-    private Restaurent restaurent;
+    private Restaurant restaurent;
 }

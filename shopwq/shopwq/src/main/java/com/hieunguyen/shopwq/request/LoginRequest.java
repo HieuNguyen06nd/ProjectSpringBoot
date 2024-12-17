@@ -1,4 +1,4 @@
-package com.hieunguyen.shopwq;
+package com.hieunguyen.shopwq.request;
 
 import lombok.Data;
 

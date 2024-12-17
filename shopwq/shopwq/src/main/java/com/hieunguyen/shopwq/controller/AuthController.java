@@ -1,6 +1,6 @@
 package com.hieunguyen.shopwq.controller;
 
-import com.hieunguyen.shopwq.LoginRequest;
+import com.hieunguyen.shopwq.request.LoginRequest;
 import com.hieunguyen.shopwq.config.JwtProvider;
 import com.hieunguyen.shopwq.model.Cart;
 import com.hieunguyen.shopwq.model.USER_ROLE;
@@ -87,6 +87,7 @@ public class AuthController {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
         authResponse.setMessage("Sign in success");
+
         authResponse.setRole(USER_ROLE.valueOf(role));
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);

@@ -22,7 +22,7 @@ public class IngredientsCategory {
 
     @JsonIgnore
     @ManyToOne
-    private Restaurent restaurent;
+    private Restaurant restaurent;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<IngredientsItems>ingredientsItems = new ArrayList<>();
