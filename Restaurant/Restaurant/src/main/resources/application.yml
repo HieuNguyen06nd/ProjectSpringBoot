@@ -1,0 +1,58 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /restaurant
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/restaurantDBV2
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenhieu06.nd@gmail.com
+    password: pmsu yaji hvyb ofaj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+api:
+  prefix: api/v1
+
+app:
+  verification:
+    url: http://localhost:8080/restaurant/api/auth/verify-email
+
+jwt:
+  expiration: 2592000000 # 30 ngày (30 * 24 * 60 * 60 * 1000 ms)
+  secret: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.hibernate: ERROR
+
+vnpay:
+  tmnCode: IUF4OVVR
+  hashSecret: UAEXX7XC23DQ6XPX6QSPJHWRBHTQ9OLC
+  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  returnUrl: http://localhost:8080/restaurant/api/payments/vnpay-callback
+  version: "2.1.0"
+

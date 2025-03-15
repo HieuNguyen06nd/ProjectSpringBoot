@@ -16,10 +16,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  docker:
+    compose:
+      enabled: true
 api:
   prefix: api/v1
 
 jwt:
   expiration: 2592000
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+

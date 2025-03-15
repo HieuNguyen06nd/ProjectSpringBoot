@@ -1,7 +1,6 @@
 package com.hieunguyen.shopwq.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,17 +8,16 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Embeddable
 public class RestaurantDto {
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 1000)  // Cột images sẽ lưu trữ danh sách ảnh
     private List<String> images;
 
     private String description;
 
+    @Column(name = "restaurant_id")
     private Long id;
-
 
 }

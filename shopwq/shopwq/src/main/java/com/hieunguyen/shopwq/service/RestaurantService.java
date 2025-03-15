@@ -121,10 +121,19 @@ public class RestaurantService implements IRestaurantService {
         restaurantDto.setTitle(restaurant.getName());
         restaurantDto.setId(restaurantId);
 
-        if (user.getFavorites().contains(restaurantDto)) {
-            user.getFavorites().remove(restaurantDto);
-        } else {
-            user.getFavorites().add(restaurantDto);
+        boolean isFavorited =false;
+        List<RestaurantDto>favorites = user.getFavorites();
+        for (RestaurantDto favorite : favorites){
+            if (favorite.getId().equals(restaurantId)){
+                isFavorited =true;
+                break;
+            }
+        }
+
+        if (isFavorited){
+            favorites.removeIf(favorite ->favorite.getId().equals(restaurantId));
+        }else {
+            favorites.add(restaurantDto);
         }
         userRepository.save(user);
 

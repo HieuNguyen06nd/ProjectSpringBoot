@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /shop-store
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/store_db
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenhieu06.nd@gmail.com
+    password: pmsu yaji hvyb ofaj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+api:
+  prefix: api/v1
+
+jwt:
+  secret-key: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  expiration-time: 86400000  # Th?i gian h?t h?n (ms), ? ?ây là 1 ngày
+
+logging:
+  level:
+    org.springframework.security: DEBUG

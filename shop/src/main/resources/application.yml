@@ -1,0 +1,36 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /shop
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/econome_shop
+    username: root
+    password: 1234567
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+api:
+  prefix: api/v1
+
+#  mail:
+#    host: smtp.example.com    # The SMTP server address
+#    port: 587                 # The port number (587 for TLS, 465 for SSL, 25 for unencrypted)
+#    username: nguyenhieu06.nd@gmail.com   # Your email username
+#    password: requ xflu wmhk wezz   # Your email password (you may use environment variables for security)
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#    protocol: smtp               # SMTP protocol
+#    default-encoding: UTF-8       # The encoding to use
