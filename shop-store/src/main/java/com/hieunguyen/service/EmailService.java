@@ -1,25 +1,7 @@
 package com.hieunguyen.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
-public class EmailService {
-
-    private final JavaMailSender mailSender;
-
-    public void sendEmailVerification(String to, String token) {
-        String subject = "Xác nhận email đăng ký";
-        String verificationUrl = "http://localhost:8080/auth/verify?token=" + token;
-        String text = "Vui lòng nhấp vào link sau để xác nhận email của bạn: " + verificationUrl;
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
-    }
+public interface EmailService {
+    void sendVerificationCode(String to, String token);
+    void sendOtp(String to, String otp);
+    String generateOtp();
 }
