@@ -8,9 +8,10 @@ public enum ErrorCode {
     USERNAME_INVALID(1003, "Username must be at least 3 characters"),
     INVALID_PASSWORD(1004, "Password must be at least 8 characters"),
     USER_NOT_EXISTED(1005, "User not existed"),
-    UnAUTHENTICATED(1006, "Unauthenticated"),
+    UNAUTHENTICATED(1006, "Unauthenticated"),
     CATEGORY_EXISTED(1007, "Category existed"),
     NOT_FOUND(1008, "Not found"),
+    FORBIDDEN(403, "Forbidden"),
 
     // Thêm các mã lỗi mới cho xử lý file
     INTERNAL_SERVER_ERROR(500, "Internal Server Error"),

@@ -1,11 +1,13 @@
 package com.hieunguyen.controller;
 
+import com.hieunguyen.config.CustomUserDetails;
+import com.hieunguyen.dto.response.AddressResponse;
 import com.hieunguyen.dto.response.ResponseData;
+import com.hieunguyen.exception.BusinessException;
 import com.hieunguyen.exception.ErrorCode;
-import com.hieunguyen.model.Address;
 import com.hieunguyen.service.AddressService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,59 +19,70 @@ public class AddressController {
 
     private final AddressService addressService;
 
-    // Tạo địa chỉ mới cho một user
-    // Ví dụ: POST /api/addresses/user/1
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<ResponseData<Address>> createAddress(@PathVariable Long userId,
-                                                               @RequestBody Address address) {
-        Address savedAddress = addressService.createAddress(userId, address);
-        return ResponseEntity.ok(new ResponseData<>(200, "Địa chỉ được tạo thành công", savedAddress));
+    @PostMapping
+    public ResponseData<AddressResponse> createAddress(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestBody com.hieunguyen.model.Address address
+    ) {
+        AddressResponse saved = addressService.createAddress(currentUser.getId(), address);
+        return new ResponseData<>(200, "Địa chỉ được tạo thành công", saved);
     }
 
-    // Lấy địa chỉ theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseData<Address>> getAddressById(@PathVariable Long id) {
-        Address address = addressService.getAddressById(id);
-        if (address == null) {
-            return ResponseEntity.ok(new ResponseData<>(ErrorCode.NOT_FOUND.getCode(), "Địa chỉ không tồn tại", null));
+    public ResponseData<AddressResponse> getAddressById(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long id
+    ) {
+        AddressResponse addr = addressService.getAddressById(id);
+        if (!addr.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Không có quyền truy cập địa chỉ này");
         }
-        return ResponseEntity.ok(new ResponseData<>(200, "Địa chỉ được tìm thấy", address));
+        return new ResponseData<>(200, "Địa chỉ được tìm thấy", addr);
     }
 
-    // Lấy tất cả địa chỉ của một user
-    // Ví dụ: GET /api/addresses/user/1
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ResponseData<List<Address>>> getAddressesByUserId(@PathVariable Long userId) {
-        List<Address> addresses = addressService.getAddressesByUserId(userId);
-        return ResponseEntity.ok(new ResponseData<>(200, "Danh sách địa chỉ", addresses));
+    @GetMapping
+    public ResponseData<List<AddressResponse>> getAllAddresses(
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        List<AddressResponse> list = addressService.getAddressesByUserId(currentUser.getId());
+        return new ResponseData<>(200, "Danh sách địa chỉ", list);
     }
 
-    // Lấy địa chỉ mặc định của một user
-    // Ví dụ: GET /api/addresses/user/1/default
-    @GetMapping("/user/{userId}/default")
-    public ResponseEntity<ResponseData<Address>> getDefaultAddress(@PathVariable Long userId) {
-        Address address = addressService.getDefaultAddress(userId);
-        if (address == null) {
-            return ResponseEntity.ok(new ResponseData<>(ErrorCode.NOT_FOUND.getCode(), "Địa chỉ mặc định không tồn tại", null));
+    @GetMapping("/default")
+    public ResponseData<AddressResponse> getDefaultAddress(
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        AddressResponse def = addressService.getDefaultAddress(currentUser.getId());
+        if (!def.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Không có quyền truy cập địa chỉ mặc định");
         }
-        return ResponseEntity.ok(new ResponseData<>(200, "Địa chỉ mặc định được tìm thấy", address));
+        return new ResponseData<>(200, "Địa chỉ mặc định được tìm thấy", def);
     }
 
-    // Cập nhật địa chỉ theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseData<Address>> updateAddress(@PathVariable Long id,
-                                                               @RequestBody Address address) {
-        Address updatedAddress = addressService.updateAddress(id, address);
-        if (updatedAddress == null) {
-            return ResponseEntity.ok(new ResponseData<>(ErrorCode.NOT_FOUND.getCode(), "Địa chỉ không tồn tại", null));
+    public ResponseData<AddressResponse> updateAddress(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long id,
+            @RequestBody com.hieunguyen.model.Address address
+    ) {
+        AddressResponse existing = addressService.getAddressById(id);
+        if (!existing.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Không có quyền cập nhật địa chỉ này");
         }
-        return ResponseEntity.ok(new ResponseData<>(200, "Địa chỉ được cập nhật thành công", updatedAddress));
+        AddressResponse updated = addressService.updateAddress(id, address);
+        return new ResponseData<>(200, "Địa chỉ được cập nhật thành công", updated);
     }
 
-    // Xoá địa chỉ theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseData<Void>> deleteAddress(@PathVariable Long id) {
+    public ResponseData<Void> deleteAddress(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long id
+    ) {
+        AddressResponse existing = addressService.getAddressById(id);
+        if (!existing.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Không có quyền xóa địa chỉ này");
+        }
         addressService.deleteAddress(id);
-        return ResponseEntity.ok(new ResponseData<>(200, "Địa chỉ đã được xóa", null));
+        return new ResponseData<>(200, "Địa chỉ đã được xóa", null);
     }
 }

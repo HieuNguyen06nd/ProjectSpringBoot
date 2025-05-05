@@ -7,4 +7,5 @@ import com.hieunguyen.model.User;
 public interface UserService {
     User updateUser(Long userId, UserUpdateRequest request);
     UserResponse getCurrentUserInfo(String email);
+    User findByEmailOrPhone(String identifier);
 }

@@ -170,9 +170,6 @@ public class ProductServiceImpl implements ProductService {
         item.setSku(itemReq.getSku());
     }
 
-
-
-
     @Override
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
@@ -309,24 +306,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private double calculateDiscountedPrice(double originalPrice, List<Discount> discounts) {
-        double finalPrice = originalPrice;
         LocalDateTime now = LocalDateTime.now();
 
-        for (Discount discount : discounts) {
-            // Kiểm tra điều kiện áp dụng
-            if (discount.getActive()
-                    && (discount.getValidFrom() == null || discount.getValidFrom().isBefore(now))
-                    && (discount.getValidTo() == null || discount.getValidTo().isAfter(now))) {
+        // Tìm discount tốt nhất
+        Discount bestDiscount = discounts.stream()
+                .filter(d -> d.getActive()
+                        && (d.getValidFrom() == null || d.getValidFrom().isBefore(now))
+                        && (d.getValidTo() == null || d.getValidTo().isAfter(now)))
+                .max((d1, d2) -> {
+                    double value1 = d1.getType() == DiscountType.PERCENTAGE ? d1.getValue() : d1.getValue() * 100 / originalPrice;
+                    double value2 = d2.getType() == DiscountType.PERCENTAGE ? d2.getValue() : d2.getValue() * 100 / originalPrice;
+                    return Double.compare(value1, value2);
+                })
+                .orElse(null);
 
-                if (discount.getType() == DiscountType.PERCENTAGE) {
-                    finalPrice -= originalPrice * (discount.getValue() / 100.0);
-                } else {
-                    finalPrice -= discount.getValue();
-                }
-            }
+        if (bestDiscount == null) {
+            return originalPrice;
         }
 
-        return Math.max(finalPrice, 0.0); // Đảm bảo không âm
+        if (bestDiscount.getType() == DiscountType.PERCENTAGE) {
+            return Math.max(originalPrice * (1 - bestDiscount.getValue() / 100.0), 0.0);
+        } else {
+            return Math.max(originalPrice - bestDiscount.getValue(), 0.0);
+        }
     }
 
     private double getMaxDiscountPercent(List<Discount> discounts) {

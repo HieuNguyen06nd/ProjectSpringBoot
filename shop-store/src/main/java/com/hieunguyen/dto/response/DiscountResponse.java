@@ -1,27 +1,29 @@
 package com.hieunguyen.dto.response;
 
+import com.hieunguyen.dto.request.ProductRuleDTO;
 import com.hieunguyen.utils.ApplicableType;
+import com.hieunguyen.utils.DiscountStatus;
 import com.hieunguyen.utils.DiscountType;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@Builder
+@Data @Builder
 public class DiscountResponse {
     private Long id;
     private String code;
     private String name;
     private String description;
-    private Double value;
-    private DiscountType type;
+    private ApplicableType applicableTo;
+    private DiscountType discountType;
+    private Double percentage;
+    private Double fixedAmount;
+    private Double minOrderAmount;
+    private Double maxDiscountAmount;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
-    private ApplicableType applicableTo;
-    private List<Long> applicableProductIds;
-    private Double minOrderAmount;
-    private Boolean isActive;
-    private LocalDateTime createdAt;
+    private Integer priority;
+    private DiscountStatus status;
+    private List<ProductRuleDTO> productRules; // nếu PRODUCT
 }

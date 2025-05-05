@@ -1,15 +1,19 @@
 package com.hieunguyen.service.impl;
 
 import com.hieunguyen.dto.request.DiscountRequest;
+import com.hieunguyen.dto.request.ProductRuleDTO;
 import com.hieunguyen.dto.response.DiscountResponse;
-import com.hieunguyen.exception.ResourceNotFoundException;
 import com.hieunguyen.model.Discount;
+import com.hieunguyen.model.DiscountProductRule;
+import com.hieunguyen.model.ProductItem;
 import com.hieunguyen.repository.DiscountRepository;
+import com.hieunguyen.repository.ProductItemRepository;
 import com.hieunguyen.service.DiscountService;
 import com.hieunguyen.utils.ApplicableType;
-import com.hieunguyen.utils.DiscountType;
+import com.hieunguyen.utils.DiscountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,138 +22,87 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DiscountServiceImpl implements DiscountService {
+    private final DiscountRepository discountRepo;
+    private final ProductItemRepository productRepo;
 
-    private final DiscountRepository discountRepository;
-
-    @Override
-    public DiscountResponse createDiscount(DiscountRequest request) {
-        validateDiscountRequest(request);
-        Discount newDiscount = convertToEntity(request);
-        Discount savedDiscount = discountRepository.save(newDiscount);
-        return convertToResponse(savedDiscount);
-    }
-
-    @Override
-    public DiscountResponse updateDiscount(Long id, DiscountRequest request) {
-        Discount existingDiscount = discountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Discount not found with id: " + id));
-
-        validateDiscountRequest(request);
-        updateEntityFromRequest(existingDiscount, request);
-
-        Discount updatedDiscount = discountRepository.save(existingDiscount);
-        return convertToResponse(updatedDiscount);
-    }
-
-    @Override
-    public List<DiscountResponse> getAllDiscounts() {
-        return discountRepository.findAll()
-                .stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public DiscountResponse getDiscountById(Long id) {
-        return discountRepository.findById(id)
-                .map(this::convertToResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Discount not found with id: " + id));
-    }
-
-    @Override
-    public void toggleDiscountStatus(Long id) {
-        Discount discount = discountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Discount not found with id: " + id));
-
-        discount.setActive(!discount.getActive());
-        discountRepository.save(discount);
-    }
-
-    @Override
-    public List<DiscountResponse> getActiveProductDiscounts(Long productId) {
-        return discountRepository.findActiveProductDiscounts(productId, LocalDateTime.now())
-                .stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DiscountResponse> getActiveOrderDiscounts() {
-        return discountRepository.findActiveOrderDiscounts(LocalDateTime.now())
-                .stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    // Helper methods
-    private Discount convertToEntity(DiscountRequest request) {
-        return Discount.builder()
-                .code(request.getCode())
-                .name(request.getName())
-                .description(request.getDescription())
-                .value(request.getValue())
-                .type(request.getType())
-                .validFrom(request.getValidFrom())
-                .validTo(request.getValidTo())
-                .applicableTo(request.getApplicableTo())
-                .applicableProductIds(request.getApplicableProductIds())
-                .minOrderAmount(request.getMinOrderAmount())
-                .active(true)
+    /**
+     * Tạo mới mã giảm giá
+     */
+    @Transactional
+    public DiscountResponse createDiscount(DiscountRequest req) {
+        // 1. Map DTO -> Entity
+        Discount d = Discount.builder()
+                .code(req.getCode())
+                .name(req.getName())
+                .description(req.getDescription())
+                .applicableTo(req.getApplicableTo())
+                .discountType(req.getDiscountType())
+                .percentage(req.getPercentage())
+                .fixedAmount(req.getFixedAmount())
+                .minOrderAmount(req.getMinOrderAmount())
+                .maxDiscountAmount(req.getMaxDiscountAmount())
+                .validFrom(req.getValidFrom())
+                .validTo(req.getValidTo())
+                .priority(req.getPriority())
+                .status(DiscountStatus.ACTIVE)
                 .build();
+
+        // 2. Xử lý PRODUCT-level rules
+        if (req.getApplicableTo() == ApplicableType.PRODUCT && req.getProductRules() != null) {
+            for (ProductRuleDTO dto : req.getProductRules()) {
+                ProductItem pi = productRepo.findById(dto.getProductItemId())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid productItemId"));
+
+                DiscountProductRule rule = DiscountProductRule.builder()
+                        .discount(d)
+                        .productItem(pi)
+                        .percentage(dto.getPercentage())
+                        .fixedAmount(dto.getFixedAmount())
+                        .build();
+
+                d.getProductRules().add(rule);
+            }
+        }
+
+        // 3. Lưu xuống DB
+        Discount saved = discountRepo.save(d);
+
+        // 4. Map Entity -> DTO Response
+        return mapToResponse(saved);
     }
 
-    private void updateEntityFromRequest(Discount discount, DiscountRequest request) {
-        discount.setCode(request.getCode());
-        discount.setName(request.getName());
-        discount.setDescription(request.getDescription());
-        discount.setValue(request.getValue());
-        discount.setType(request.getType());
-        discount.setValidFrom(request.getValidFrom());
-        discount.setValidTo(request.getValidTo());
-        discount.setApplicableTo(request.getApplicableTo());
-        discount.setApplicableProductIds(request.getApplicableProductIds());
-        discount.setMinOrderAmount(request.getMinOrderAmount());
-    }
+    /**
+     * Chuyển Discount entity -> DiscountResponse
+     */
+    public DiscountResponse mapToResponse(Discount d) {
+        DiscountResponse.DiscountResponseBuilder rb = DiscountResponse.builder()
+                .id(d.getId())
+                .code(d.getCode())
+                .name(d.getName())
+                .description(d.getDescription())
+                .applicableTo(d.getApplicableTo())
+                .discountType(d.getDiscountType())
+                .percentage(d.getPercentage())
+                .fixedAmount(d.getFixedAmount())
+                .minOrderAmount(d.getMinOrderAmount())
+                .maxDiscountAmount(d.getMaxDiscountAmount())
+                .validFrom(d.getValidFrom())
+                .validTo(d.getValidTo())
+                .priority(d.getPriority())
+                .status(d.getStatus());
 
-    private DiscountResponse convertToResponse(Discount discount) {
-        return DiscountResponse.builder()
-                .id(discount.getId())
-                .code(discount.getCode())
-                .name(discount.getName())
-                .description(discount.getDescription())
-                .value(discount.getValue())
-                .type(discount.getType())
-                .validFrom(discount.getValidFrom())
-                .validTo(discount.getValidTo())
-                .applicableTo(discount.getApplicableTo())
-                .applicableProductIds(discount.getApplicableProductIds())
-                .minOrderAmount(discount.getMinOrderAmount())
-                .isActive(discount.getActive())
-                .createdAt(discount.getCreatedAt())
-                .build();
-    }
-
-    private void validateDiscountRequest(DiscountRequest request) {
-        // Validate date range
-        if (request.getValidTo().isBefore(request.getValidFrom())) {
-            throw new IllegalArgumentException("End date must be after start date");
+        if (d.getApplicableTo() == ApplicableType.PRODUCT) {
+            List<ProductRuleDTO> rules = d.getProductRules().stream()
+                    .map(r -> {
+                        ProductRuleDTO dto = new ProductRuleDTO();
+                        dto.setProductItemId(r.getProductItem().getId());
+                        dto.setPercentage(r.getPercentage());
+                        dto.setFixedAmount(r.getFixedAmount());
+                        return dto;
+                    }).collect(Collectors.toList());
+            rb.productRules(rules);
         }
 
-        // Validate product discounts
-        if (request.getApplicableTo() == ApplicableType.PRODUCT &&
-                (request.getApplicableProductIds() == null || request.getApplicableProductIds().isEmpty())) {
-            throw new IllegalArgumentException("At least one product must be selected for product discounts");
-        }
-
-        // Validate fixed amount
-        if (request.getType() == DiscountType.FIXED_AMOUNT && request.getValue() <= 0) {
-            throw new IllegalArgumentException("Fixed amount must be greater than 0");
-        }
-
-        // Validate percentage range
-        if (request.getType() == DiscountType.PERCENTAGE &&
-                (request.getValue() <= 0 || request.getValue() > 100)) {
-            throw new IllegalArgumentException("Percentage must be between 0 and 100");
-        }
+        return rb.build();
     }
 }

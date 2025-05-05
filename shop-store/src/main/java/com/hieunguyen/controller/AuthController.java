@@ -4,7 +4,9 @@ import com.hieunguyen.dto.request.AuthRequest;
 import com.hieunguyen.dto.request.RegisterRequest;
 import com.hieunguyen.dto.response.AuthResponse;
 import com.hieunguyen.dto.response.ResponseData;
+import com.hieunguyen.model.User;
 import com.hieunguyen.service.AuthService;
+import com.hieunguyen.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     // Đăng ký
     @PostMapping("/register")
@@ -42,7 +45,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseData<AuthResponse> login(@RequestBody AuthRequest request) {
         String token = authService.login(request.getEmailOrPhone(), request.getPassword(), request.getOtp());
-        return new ResponseData<>(200, "Đăng nhập thành công", new AuthResponse(token));
+        User user = userService.findByEmailOrPhone(request.getEmailOrPhone());
+        Long userId = user.getId();
+        return new ResponseData<>(200, "Đăng nhập thành công", new AuthResponse(token, userId));
     }
 
     // Xác thực OTP

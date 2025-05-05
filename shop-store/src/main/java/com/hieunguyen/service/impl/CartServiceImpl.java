@@ -108,7 +108,9 @@ public class CartServiceImpl implements CartService {
                             .price(ci.getProductItem().getPrice())
                             .quantity(ci.getQuantity())
                             .colorId(ci.getProductItem().getColor().getId())
+                            .colorName(ci.getProductItem().getColor().getName())
                             .sizeId(ci.getProductItem().getSize().getId())
+                            .sizeName(ci.getProductItem().getSize().getName())
                             .build();
                 })
                 .collect(Collectors.toList());

@@ -51,9 +51,7 @@ public class Orders {
     private Address address;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderDiscount> orderDiscounts;
-
-
+    private Set<DiscountProductRule> orderDiscounts;
 
     @PrePersist
     public void prePersist() {

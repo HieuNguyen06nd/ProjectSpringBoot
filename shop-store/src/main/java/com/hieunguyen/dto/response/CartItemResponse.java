@@ -15,5 +15,7 @@ public class CartItemResponse {
     private double price;
     private int quantity;
     private long colorId;
+    private String colorName;
     private long sizeId;
+    private String sizeName;
 }

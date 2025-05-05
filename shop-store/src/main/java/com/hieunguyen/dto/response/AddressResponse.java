@@ -1,12 +1,13 @@
 package com.hieunguyen.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 public class AddressResponse {
     private Long id;
+    private UserSummary user;
     private String fullName;
     private String phone;
     private String province;
@@ -14,4 +15,12 @@ public class AddressResponse {
     private String ward;
     private String detail;
     private boolean isDefault;
+
+    @Data
+    @AllArgsConstructor
+    public static class UserSummary {
+        private Long id;
+        private String email;
+        private String fullName;
+    }
 }

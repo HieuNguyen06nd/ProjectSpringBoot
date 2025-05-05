@@ -1,11 +1,9 @@
 package com.hieunguyen.config;
 
-
 import com.hieunguyen.model.User;
 import com.hieunguyen.utils.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Collections;
 
@@ -61,5 +59,13 @@ public class CustomUserDetails implements UserDetails {
 
     public Role getRole() {
         return user.getRole();
+    }
+
+    public Long getId() {
+        return user.getId();
+    }
+
+    public User getUser() {
+        return user;
     }
 }

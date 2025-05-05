@@ -7,6 +7,7 @@ import com.hieunguyen.model.User;
 import com.hieunguyen.repository.UserRepository;
 import com.hieunguyen.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Override
     public User updateUser(Long userId, UserUpdateRequest request) {
         // Tìm user theo ID, nếu không có thì ném lỗi
         User user = userRepository.findById(userId)
@@ -33,6 +35,15 @@ public class UserServiceImpl implements UserService {
 
         // Lưu user vào DB
         return userRepository.save(user);
+    }
+    @Override
+    public User findByEmailOrPhone(String identifier) {
+        return userRepository.findByEmail(identifier)
+                .orElseGet(() -> userRepository.findByPhone(identifier)
+                        .orElseThrow(() ->
+                                new UsernameNotFoundException("User not found with email or phone: " + identifier)
+                        )
+                );
     }
 
     @Override
